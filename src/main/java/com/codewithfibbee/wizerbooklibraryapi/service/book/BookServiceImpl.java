@@ -27,12 +27,14 @@ public class BookServiceImpl implements IBookService{
 
     @Override
     public Book editBook(Long bookId, BookDto bookDto) {
-        var book = this.iBookRepository.findById(bookId);
-        if (book.isPresent()){
-            mapper().map(bookDto, book.get());
-            this.iBookRepository.save(book.get());
-            return book.get();
-        } else throw new ResourceNotFoundException("Resource Not Found");
+        var book = this.iBookRepository.findById(bookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
+        book.setTitle(bookDto.getTitle());
+        book.setAuthor(bookDto.getAuthor());
+        book.setDescription(bookDto.getDescription());
+        book.setPublisher(bookDto.getPublisher());
+        this.iBookRepository.save(book);
+        return book;
     }
 
     @Override

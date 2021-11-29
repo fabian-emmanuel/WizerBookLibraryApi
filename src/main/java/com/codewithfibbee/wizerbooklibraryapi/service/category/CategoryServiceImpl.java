@@ -28,12 +28,11 @@ public class CategoryServiceImpl implements ICategoryService{
 
     @Override
     public Category editCategory(Long categoryId, CategoryDto categoryDto) {
-        var category = this.iCategoryRepository.findById(categoryId);
-        if (category.isPresent()){
-            category.get().setName(categoryDto.getName());
-            this.iCategoryRepository.save(category.get());
-            return category.get();
-        } else throw new ResourceNotFoundException("Resource Not Found");
+        var category = this.iCategoryRepository.findById(categoryId)
+                .orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
+        category.setName(categoryDto.getName());
+        this.iCategoryRepository.save(category);
+        return category;
     }
 
     @Override
