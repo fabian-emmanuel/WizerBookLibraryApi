@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("${api.basepath}/books")
 @RequiredArgsConstructor
 public class BookController implements IBookController {
     private final IBookService iBookService;
@@ -19,7 +19,7 @@ public class BookController implements IBookController {
     @Override
     @PostMapping
     public ResponseEntity<Book> addBook(@RequestBody BookDto bookDto) {
-        return ResponseEntity.ok().body(this.iBookService.addBook(bookDto));
+        return ResponseEntity.ok().body(this.iBookService.createBook(bookDto));
     }
 
     @Override
@@ -45,18 +45,5 @@ public class BookController implements IBookController {
     public ResponseEntity<Object> deleteBook(@PathVariable Long bookId) {
         this.iBookService.deleteBook(bookId);
         return ResponseEntity.ok().body("Deleted Successfully");
-    }
-
-    @Override
-    @PostMapping("/{bookId}")
-    public ResponseEntity<Object> addBookToFavourite(@PathVariable Long bookId) {
-        this.iBookService.addBookToFavourite(bookId);
-        return ResponseEntity.ok().body("Added Successfully");
-    }
-
-    @Override
-    @GetMapping("/favourites")
-    public ResponseEntity<Collection<Book>> listFavourites() {
-        return ResponseEntity.ok().body(this.iBookService.retrieveAllFavouriteBooks());
     }
 }

@@ -32,31 +32,10 @@ public class Book {
     @Column(nullable = false)
     private Date dateAdded;
 
-    @OneToMany
-    Set<Book> favourites = null;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
 
-
-    public void addBookToFavourite(Book book){
-        createFavouriteListIfNull();
-        this.favourites.add(book);
-    }
-
-    public void removeBookFromFavourite(Book book){
-        createFavouriteListIfNull();
-        this.favourites.remove(book);
-    }
-
-    private void createFavouriteListIfNull() {
-        if(favourites == null){
-            favourites = new LinkedHashSet<>();
-        }
-    }
-
-
-
-
 }
+
+

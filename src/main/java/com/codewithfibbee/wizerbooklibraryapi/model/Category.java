@@ -24,7 +24,7 @@ public class Category {
     @Column
     private Date dateCreated;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<Book> books = null;
 
     public void addBookToCategory(Book book){

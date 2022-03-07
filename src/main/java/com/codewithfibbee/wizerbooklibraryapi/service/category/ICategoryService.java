@@ -6,11 +6,12 @@ import com.codewithfibbee.wizerbooklibraryapi.model.Category;
 import java.util.Collection;
 
 public interface ICategoryService {
-    Category addCategory(CategoryDto categoryDto);
-    Category editCategory(Long categoryId, CategoryDto categoryDto);
+    Category createCategory(CategoryDto categoryDto);
+    Category updateCategory(Long categoryId, CategoryDto categoryDto);
     Collection<Category> listAllCategories();
     Category getACategory(Long categoryId);
     void addBookToCategory(Long bookId, Long categoryId);
+    void removeBookFromCategory(Long bookId, Long categoryId);
     void deleteCategory(Long categoryId);
 
 

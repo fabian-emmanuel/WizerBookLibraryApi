@@ -17,8 +17,10 @@ public class BookServiceImpl implements IBookService{
 
     private final IBookRepository iBookRepository;
 
+    private static final String BOOK_NOT_FOUND_ERROR_MSG = "Book Not Found";
+
     @Override
-    public Book addBook(BookDto bookDto) {
+    public Book createBook(BookDto bookDto) {
         var book = mapper().map(bookDto, Book.class);
         book.setDateAdded(new Date());
         this.iBookRepository.save(book);
@@ -28,7 +30,7 @@ public class BookServiceImpl implements IBookService{
     @Override
     public Book editBook(Long bookId, BookDto bookDto) {
         var book = this.iBookRepository.findById(bookId)
-                .orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
+                .orElseThrow(()-> new ResourceNotFoundException(BOOK_NOT_FOUND_ERROR_MSG));
         book.setTitle(bookDto.getTitle());
         book.setAuthor(bookDto.getAuthor());
         book.setDescription(bookDto.getDescription());
@@ -45,28 +47,17 @@ public class BookServiceImpl implements IBookService{
     @Override
     public Book retrieveBook(Long bookId) {
         return this.iBookRepository.findById(bookId)
-                .orElseThrow(()-> new ResourceNotFoundException("Resource Not Found"));
+                .orElseThrow(()-> new ResourceNotFoundException(BOOK_NOT_FOUND_ERROR_MSG));
     }
 
     @Override
     public void deleteBook(Long bookId) {
-        var book = this.iBookRepository.findById(bookId);
-        book.ifPresentOrElse(this.iBookRepository::delete,
-                () -> {throw new ResourceNotFoundException("Resource Not Found");
-        });
+        this.iBookRepository.findById(bookId).
+                ifPresentOrElse(this.iBookRepository::delete, BookServiceImpl::bookNotFound);
     }
 
-    @Override
-    public void addBookToFavourite(Long bookId) {
-        var book = this.iBookRepository.findById(bookId);
-        book.ifPresentOrElse(value -> value.addBookToFavourite(value),
-                () -> {throw new ResourceNotFoundException("Resource Not Found");
-        });
-    }
-
-    @Override
-    public Collection<Book> retrieveAllFavouriteBooks() {
-        return null;
+    private static void bookNotFound() {
+        throw new ResourceNotFoundException(BOOK_NOT_FOUND_ERROR_MSG);
     }
 
     private ModelMapper mapper(){

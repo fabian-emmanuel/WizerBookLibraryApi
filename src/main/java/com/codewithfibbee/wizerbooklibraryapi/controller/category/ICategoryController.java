@@ -15,7 +15,7 @@ public interface ICategoryController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Resource created successfully"),
             @ApiResponse(code = 404, message = "not found!!!")})
-    @ApiOperation(value = "Add Category")
+    @ApiOperation(value = "Create Category")
     ResponseEntity<Category> addCategory(@Valid CategoryDto categoryDto);
 
     @ApiResponses(value = {

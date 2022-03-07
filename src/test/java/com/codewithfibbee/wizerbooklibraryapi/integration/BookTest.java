@@ -4,6 +4,7 @@ package com.codewithfibbee.wizerbooklibraryapi.integration;
 import com.codewithfibbee.wizerbooklibraryapi.dtos.BookDto;
 import com.codewithfibbee.wizerbooklibraryapi.model.Book;
 import com.codewithfibbee.wizerbooklibraryapi.repository.IBookRepository;
+import com.codewithfibbee.wizerbooklibraryapi.util.TestModels;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import com.codewithfibbee.wizerbooklibraryapi.util.*;
 
 import static com.codewithfibbee.wizerbooklibraryapi.utility.Converter.asJsonString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor
 public class BookTest {
 
-    @Value("${api.basepath-api}")
+    @Value("${api.basepath}")
     private String path = "";
 
     @Autowired
@@ -64,10 +65,15 @@ public class BookTest {
         form.setDescription("A nice book");
         form.setPublisher("Finest");
 
-        this.mockMvc.perform(post(path + "books")
+        this.mockMvc.perform(post(path + "/books")
                         .content(asJsonString(form))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Prejudice"))
+                .andExpect(jsonPath("$.author").value("John Mich"))
+                .andExpect(jsonPath("$.description").value("A nice book"))
+                .andExpect(jsonPath("$.publisher").value("Finest"));
 
     }
 
@@ -75,22 +81,21 @@ public class BookTest {
     void shouldEditBookSuccessfully() throws Exception {
 
         BookDto form = new BookDto();
-        form.setTitle("Prejudice");
-        form.setAuthor("John Mich");
-        form.setDescription("A nice book");
-        form.setPublisher("Finest");
+        form.setTitle("new Prejudice");
+        form.setAuthor("new John Mich");
+        form.setDescription("new A nice book");
+        form.setPublisher("new Finest");
 
-        this.mockMvc.perform(post(path + "books/{bookId}", book.getId())
+        this.mockMvc.perform(put(path + "/books/{bookId}", book.getId())
                         .content(asJsonString(form))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("new Prejudice"))
+                .andExpect(jsonPath("$.author").value("new John Mich"))
+                .andExpect(jsonPath("$.description").value("new A nice book"))
+                .andExpect(jsonPath("$.publisher").value("new Finest"));
 
-        Book editedBook = iBookRepository.findById(book.getId()).orElseThrow();
-
-        assertEquals("Prejudice", editedBook.getTitle());
-        assertEquals("John Mich", editedBook.getAuthor());
-        assertEquals("A nice book", editedBook.getDescription());
-        assertEquals("Finest", editedBook.getPublisher());
     }
 
 

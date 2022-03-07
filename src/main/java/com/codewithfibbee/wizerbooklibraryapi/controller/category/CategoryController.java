@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("${api.basepath}/categories")
 @RequiredArgsConstructor
 public class CategoryController implements ICategoryController {
     private final ICategoryService iCategoryService;
@@ -19,13 +19,13 @@ public class CategoryController implements ICategoryController {
     @Override
     @PostMapping
     public ResponseEntity<Category> addCategory(@RequestBody CategoryDto categoryDto) {
-        return ResponseEntity.ok().body(this.iCategoryService.addCategory(categoryDto));
+        return ResponseEntity.ok().body(this.iCategoryService.createCategory(categoryDto));
     }
 
     @Override
-    @PutMapping
-    public ResponseEntity<Category> editCategory(@RequestBody CategoryDto categoryDto, Long categoryId) {
-        return ResponseEntity.ok().body(this.iCategoryService.editCategory(categoryId, categoryDto));
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<Category> editCategory(@RequestBody CategoryDto categoryDto, @PathVariable Long categoryId) {
+        return ResponseEntity.ok().body(this.iCategoryService.updateCategory(categoryId, categoryDto));
     }
 
     @Override
